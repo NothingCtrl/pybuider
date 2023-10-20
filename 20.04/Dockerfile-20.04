@@ -1,0 +1,44 @@
+from ubuntu:20.04
+ENV TZ=Asia/Ho_Chi_Minh \
+    DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update
+RUN apt-get install -y git curl wget libncurses5-dev libncursesw5-dev liblzma-dev
+RUN apt-get install -y build-essential libbz2-dev libssl-dev libreadline-dev \
+                        libffi-dev libsqlite3-dev tk-dev
+
+# optional scientific package headers (for Numpy, Matplotlib, SciPy, etc.)
+RUN apt-get install -y libpng-dev libfreetype6-dev    
+RUN curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
+
+RUN export PATH="$HOME/.pyenv/bin:$PATH"
+RUN eval "$($HOME/.pyenv/bin/pyenv init -)"
+RUN eval "$($HOME/.pyenv/bin/pyenv virtualenv-init -)" 
+RUN $HOME/.pyenv/bin/pyenv install 3.9.18
+RUN $HOME/.pyenv/bin/pyenv virtualenv 3.9.18 general 
+RUN $HOME/.pyenv/bin/pyenv global general 
+RUN $HOME/.pyenv/shims/pip install pyinstaller 
+RUN $HOME/.pyenv/shims/pip install requests 
+RUN $HOME/.pyenv/shims/pip install psutil 
+RUN $HOME/.pyenv/shims/pip install python-dotenv 
+RUN $HOME/.pyenv/shims/pip install redis 
+RUN $HOME/.pyenv/shims/pip install tzdata 
+RUN $HOME/.pyenv/shims/pip install click 
+RUN $HOME/.pyenv/shims/pip install xmltodict 
+RUN $HOME/.pyenv/shims/pip install pyfiglet 
+RUN $HOME/.pyenv/shims/pip install six 
+RUN $HOME/.pyenv/shims/pip install lxml
+RUN $HOME/.pyenv/shims/pip install Pillow==8.3.1 
+          
+RUN curl https://getcroc.schollz.com | bash
+
+RUN echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> $HOME/.profile
+RUN echo 'eval "$($HOME/.pyenv/bin/pyenv init -)"' >> $HOME/.profile
+RUN echo 'eval "$($HOME/.pyenv/bin/pyenv virtualenv-init -)"' >> $HOME/.profile
+
+RUN touch /keep_container_alive.txt
+
+WORKDIR /root
+
+CMD ["bash", "-c", "while [ -f /keep_container_alive.txt ]; do sleep 1; done"]
+#CMD sleep infinity
